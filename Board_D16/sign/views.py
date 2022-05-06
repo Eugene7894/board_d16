@@ -79,9 +79,17 @@ class OTPVerif(View):
 
     def get(self, request, *args, **kwargs):
         user_id = self.kwargs.get('pk')
-        user = User.objects.get(pk=user_id)
+        user_q = User.objects.filter(pk=user_id)
+        # если нет пользователь с таким айди
+        if not user_q.exists():
+            return HttpResponseRedirect(reverse('signup'))
+        # если пользователь с таким айди уже активен
+        user = user_q.get()
+        if user.is_active:
+            return HttpResponseRedirect(reverse('account_login'))
+
         otp = random.randrange(1000, 9999)
-        # Если из-за ошибки NewUserOTP уже будет запись(-и) для юзера с user_id , то ее(их) нужно удалить и созадть заново.
+        # Если из-за ошибки NewUserOTP уже будет запись(-и) для юзера с user_id, то ее(их) нужно удалить и созадть заново.
         if NewUserOTP.objects.filter(user_id=user_id).exists():
             NewUserOTP.objects.filter(user_id=user_id).delete()
         NewUserOTP.objects.create(user_id=user_id, otp=otp)
