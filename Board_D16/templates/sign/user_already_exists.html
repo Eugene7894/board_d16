@@ -1,0 +1,13 @@
+{% extends 'default.html' %}
+
+{% block title %} Уже существует {% endblock title %}
+
+{% block content %}
+
+{{signup_user}}
+
+<h3>Пользователь с эл. почтой {{ email }} уже существует.</h3>
+<p>Пожалуйста, <a class="nav-link" href="{% url 'account_login' %}">войдите</a> под своими аккаунтом</p>
+<p>На странице входа так же можно сбросить пароль, если забыли</p>
+
+{% endblock content %}

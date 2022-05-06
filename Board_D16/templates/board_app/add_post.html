@@ -1,0 +1,20 @@
+{% extends 'default.html' %}
+
+{% load static %}
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script type="text/javascript" src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+{% block head_title %} Добавление объявления {% endblock head_title %}
+
+{% block content %}
+
+<h3>Объявление:</h3>
+<!--enctype="multipart/form-data" позволяет загружать файлы-->
+<form enctype="multipart/form-data" method="POST">
+    {% csrf_token %}
+    {{ form.media }}
+    {{ form.as_p }}
+    <input type="submit" value="Добавить">
+</form>
+
+{% endblock content %}

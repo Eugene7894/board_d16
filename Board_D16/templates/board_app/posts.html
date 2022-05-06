@@ -1,0 +1,70 @@
+{% extends 'default.html' %}
+
+{% load custom_tags %}
+
+{% block head_title %} Все объявления {% endblock head_title %}
+
+{% block content %}
+  <h2>Все объявления</h2>
+  <br>
+  {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+   <form method="GET">
+       {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+       {{ posts_filter.form }}
+       {# Добавим кнопку отправки данных формы #}
+       <input type="submit" value="Найти">
+   </form>
+   <br>
+   <hr>
+
+   {% for post in posts %}
+     <h5><a href="{% url 'post_detail' post.id %}">Заголовок: {{ post.title }}</a></h5>
+     <p>Категория: {{ post.postCategory.categoryName }}</p>
+     <p>{{ post.content|safe  }}</p>
+     {% if post.upload  %}
+     <video width="640" height="480" controls="controls">
+         <source src="{{ post.upload.url }}" type="video/mp4">
+     </video>
+     {% endif %}
+     <br>
+     {% if user.is_authenticated %}
+       {% if not post.authorUser == user %}
+         {% if not user_post_reply %}
+            <button> <a href="{% url 'post_detail' post.id %}">Откликнуться</a></button>
+         {% endif %}
+       {% endif %}
+     {% endif %}
+     <br>
+     <hr>
+   {% empty %}
+     <h4>Объявлений нет</h4>
+   {% endfor %}
+
+   <!--код для пагинации-->
+   <!--Тут используем кастомный тег url_replace , подробнее см templatetags/custom_tags-->
+   {% if is_paginated %}
+     {% if page_obj.has_previous %}
+       <a href="?{% url_replace page=1 %}">Первая</a>
+       <a href="?{% url_replace page=page_obj.previous_page_number %}"><<<</a>
+     {% endif %}
+     {% for num in page_obj.paginator.page_range %}
+       {% if page_obj.number == num %}
+         <a>{{ num }}</a>
+       {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+         <a href="?{% url_replace page=num %}">{{ num }}</a>
+       {% endif %}
+     {% endfor %}
+     {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">>>></a>
+       <a href="?{% url_replace page=page_obj.paginator.num_pages %}">Последняя</a>
+     {% endif %}
+   {% endif %}
+<!--  page_obj — это объект, в котором содержится информация о текущей странице:>-->
+<!--  has_previous — существует ли предыдущая страница-->
+<!--  previous_page_number — номер предыдущей страницы-->
+<!--  number — номер текущей страницы-->
+<!--  has_next — существует ли следующая страница-->
+<!--  next_page_number — номер следующей страницы-->
+<!--  paginator.num_pages — объект paginator содержит информацию о количестве страниц в переменной num_pages.-->
+
+{% endblock content %}

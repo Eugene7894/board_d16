@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+
+{% block head_title %} Удаление объявления {{ post.id }}{% endblock head_title %}
+
+{% block content %}
+
+<h2>Уверены, что хотите удалить объявление id: {{ post.id }} ?</h2>
+<br>
+<h5>Заголовок: {{ post.title }}</h5>
+<p>{{ post.content|safe  }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Подтвердить">
+</form>
+
+{% endblock content %}

@@ -1,0 +1,44 @@
+{% extends 'default.html' %}
+
+{% block head_title %} {{ post.title|truncatechars:30 }} {% endblock head_title %}
+
+{% block content %}
+
+
+  <h2>Объявление id: {{ post.id }}</h2>
+  <br>
+  <h4>Заголовок: {{ post.title }}</h4>
+  <p>Категория: {{ post.postCategory.categoryName }}</p>
+  <p>{{ post.content|safe  }}</p>
+  {% if post.upload  %}
+  <video width="640" height="480" controls="controls">
+        <source src="{{ post.upload.url }}" type="video/mp4">
+  </video>
+  {% endif %}
+  <br>
+  {% if user.is_authenticated %}
+  <!--Если пользователь является автором объявления, то доступны кнопки редактирования и удаления-->
+    {% if post.authorUser == user %}
+      <button> <a href="{% url 'edit_post' post.id %}">Редактировать</a> </button>
+      <button> <a href="{% url 'delete_post' post.id %}">Удалить</a> </button>
+    {% endif %}
+  {% endif %}
+  <hr>
+
+  <!--  Сначала проверяем аутентифицирован ли, потом является ли автором, потом отправлял ли уже отклик-->
+  {% if user.is_authenticated %}
+    {% if not post.authorUser == user %}
+        {% if not user_post_reply %}
+          <h5>Оставьте отклик на объявление(контакты):</h5><br>
+          <form method="POST">
+            {% csrf_token %}
+              {{ form }}
+            <input type="submit" value="Оставить отклик">
+          </form>
+        {% else %}
+          <h6>Ваш отклик отправлен</h6>
+        {% endif %}
+    {% endif %}
+  {% endif %}
+
+{% endblock content %}

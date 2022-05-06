@@ -1,0 +1,19 @@
+{% extends 'default.html' %}
+
+{% block head_title %}Выйти{% endblock %}
+
+{% block content %}
+<h1>Выход из УЗ</h1>
+
+<p>Точно хотите выйти?</p>
+
+<form method="post" action="{% url 'account_logout' %}">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button type="submit">Выйти</button>
+</form>
+
+
+{% endblock %}
